@@ -28,7 +28,7 @@ interface PostDataType {
 }
 
 export default function EditPost({ postData }: { postData: PostDataType }) {
-    const { data, setData, post, processing } = useForm<{
+    const { data, setData, processing } = useForm<{
         title: string;
         category: string;
         status: string;
@@ -37,7 +37,7 @@ export default function EditPost({ postData }: { postData: PostDataType }) {
     }>({
         title: postData.title,
         category: postData.category,
-        status: postData.status,
+        status: postData.status.toString(),
         review: postData.content,
         image: null,
     });

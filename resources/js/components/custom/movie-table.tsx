@@ -2,10 +2,16 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { PaginatedPosts } from '@/types/posts';
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { Pencil, Trash2 } from 'lucide-react';
 
 export default function MovieTable({ posts }: { posts: PaginatedPosts }) {
+    function handleDelete(id: number) {
+        if (confirm('Are you sure you want to delete this post?')) {
+            router.delete(`/posts/${id}`);
+        }
+    }
+
     return (
         <Card>
             <CardContent className="p-4">
@@ -33,7 +39,9 @@ export default function MovieTable({ posts }: { posts: PaginatedPosts }) {
                                         className="max-h-6 w-13 rounded border object-cover"
                                     />
                                 </TableCell>
-                                <TableCell className="font-medium">{post.title}</TableCell>
+                                <TableCell className="font-medium">
+                                    <Link href={`/posts/${post.id}`}>{post.title}</Link>
+                                </TableCell>
                                 <TableCell className="line-clamp-2 max-w-[250px] truncate text-sm text-muted-foreground">{post.content}</TableCell>
                                 <TableCell>{post.category}</TableCell>
                                 <TableCell>
@@ -52,7 +60,7 @@ export default function MovieTable({ posts }: { posts: PaginatedPosts }) {
                                             Editar
                                         </Link>
                                     </Button>
-                                    <Button variant="destructive" size="sm">
+                                    <Button variant="destructive" size="sm" onClick={() => handleDelete(post.id)}>
                                         <Trash2 className="mr-1 h-4 w-4" />
                                         Apagar
                                     </Button>

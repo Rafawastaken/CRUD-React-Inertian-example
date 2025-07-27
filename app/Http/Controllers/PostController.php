@@ -23,7 +23,7 @@ class PostController extends Controller
         if ($request->has('search') && $request->search !== null) {
             $query->whereAny(['title', 'content'], 'like', '%' . $request->search . '%');
         }
-        $posts = $query->paginate(1);
+        $posts = $query->paginate(5);
 
         return Inertia::render('posts/index', [
             'posts' => $posts,
@@ -72,7 +72,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        //
+        return Inertia::render('posts/show', ['post' => $post]);
     }
 
     /**
@@ -121,6 +121,11 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        if ($post->image) {
+            Storage::disk('public')->delete($post->image);
+        }
+        $post->delete();
+
+        return to_route("posts.index")->with('message', 'Post deleted successfully.');
     }
 }
