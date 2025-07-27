@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Http\Requests\PostCreateRequest;
 
 class PostController extends Controller
 {
@@ -41,30 +42,26 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(PostCreateRequest $request): RedirectResponse
     {
-        $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'review' => ['required', 'string'],
-            'status' => ['required', 'string'],
-            'category' => ['required', 'string'],
-            'image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
-        ]);
+        $data = $request->validated();
 
-        $file = $request->file('image');
-        $filepath = $file->store('posts', 'public');
+        $filepath = null;
+        if ($request->hasFile('image')) {
+            $filepath = $request->file('image')->store('posts', 'public');
+        }
 
         Post::create([
-            'user_id' => auth()->user()->id,
-            'title' => $request->title,
-            'slug' => Str::slug($request->title),
-            'content' => $request->review,
-            'status' => $request->status,
-            'category' => $request->category,
+            'user_id' => Auth::id(),
+            'title' => $data['title'],
+            'slug' => Str::slug($data['title']),
+            'content' => $data['review'],
+            'status' => $data['status'],
+            'category' => $data['category'],
             'image' => $filepath,
         ]);
 
-        return to_route("posts.index")->with('message', 'Post created successfully.');
+        return to_route('posts.index')->with('message', 'Post created successfully.');
     }
 
     /**
